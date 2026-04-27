@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SciMath Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d0122;--card:#1a0a30;--border:#3b1d6e;
+  --accent:#a855f7;--gold:#fbbf24;--green:#22c55e;
+  --red:#ef4444;--blue:#38bdf8;--pink:#f472b6;
+  --white:#f0e8ff;--muted:#7c5cbf;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);}
+body{font-family:'Nunito',sans-serif;font-weight:700;color:var(--white);}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.star{position:absolute;border-radius:50%;background:#fff;animation:tw var(--d,3s) var(--dl,0s) infinite;}
+@keyframes tw{0%,100%{opacity:.15;}50%{opacity:.9;}}
+.screen{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;overflow-y:auto;overflow-x:hidden;transition:opacity .3s,transform .3s;padding:12px 14px 20px;}
+.screen.off{opacity:0;pointer-events:none;transform:scale(.96);}
+
+/* HOME */
+#home{background:radial-gradient(ellipse at 50% -10%,#3b0764 0%,#0d0122 65%);justify-content:flex-start;padding-top:16px;}
+.logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(30px,9vw,56px);background:linear-gradient(135deg,#c084fc,#f472b6,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1.05;filter:drop-shadow(0 0 24px rgba(168,85,247,.7));animation:glow 3s ease-in-out infinite;margin-bottom:2px;}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 20px rgba(168,85,247,.6));}50%{filter:drop-shadow(0 0 40px rgba(244,114,182,.9));}}
+.sub{color:var(--muted);font-size:.68em;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;}
+.bank-badge{background:linear-gradient(135deg,rgba(34,197,94,.15),rgba(56,189,248,.15));border:1px solid var(--green);border-radius:99px;padding:4px 14px;font-size:.65em;color:var(--green);letter-spacing:.07em;margin-bottom:12px;}
+.av-title{font-size:.65em;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+.av-row{display:flex;gap:8px;margin-bottom:12px;}
+.av{width:50px;height:50px;border-radius:50%;border:2px solid var(--border);background:var(--card);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0;}
+.av:hover,.av.on{border-color:var(--accent);transform:scale(1.15);box-shadow:0 0 16px rgba(168,85,247,.6);}
+.modes{width:100%;display:flex;flex-direction:column;gap:7px;margin-bottom:12px;}
+.mb{width:100%;padding:10px 14px;border:2px solid var(--border);background:var(--card);border-radius:14px;color:var(--white);font-family:'Nunito',sans-serif;font-weight:800;font-size:.88em;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:all .18s;position:relative;overflow:hidden;}
+.mb::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .18s;}
+.mb:hover{transform:translateX(5px);}
+.mb:hover::before,.mb.on::before{opacity:1;}
+.mb.mc::before{background:linear-gradient(90deg,rgba(56,189,248,.14),transparent);}
+.mb.mc:hover,.mb.mc.on{border-color:var(--blue);}
+.mb.tf::before{background:linear-gradient(90deg,rgba(34,197,94,.14),transparent);}
+.mb.tf:hover,.mb.tf.on{border-color:var(--green);}
+.mb.blitz::before{background:linear-gradient(90deg,rgba(251,191,36,.14),transparent);}
+.mb.blitz:hover,.mb.blitz.on{border-color:var(--gold);}
+.mb.flash::before{background:linear-gradient(90deg,rgba(244,114,182,.14),transparent);}
+.mb.flash:hover,.mb.flash.on{border-color:var(--pink);}
+.mb.on{box-shadow:0 0 14px rgba(168,85,247,.35);}
+.mi{font-size:20px;min-width:26px;text-align:center;}
+.minfo{flex:1;}
+.mname{font-size:.88em;}
+.mdesc{font-size:.65em;color:var(--muted);font-weight:600;}
+.mtag{font-size:.6em;padding:2px 7px;border-radius:99px;font-weight:900;letter-spacing:.04em;flex-shrink:0;}
+.easy{background:#166534;color:#86efac;}.med{background:#713f12;color:#fde68a;}.hard{background:#7f1d1d;color:#fca5a5;}
+.play{width:100%;padding:15px;background:linear-gradient(135deg,#7c3aed,#a855f7,#c084fc);border:none;border-radius:16px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;font-size:1em;letter-spacing:.08em;cursor:pointer;box-shadow:0 6px 26px rgba(168,85,247,.5);transition:all .18s;}
+.play:hover{transform:translateY(-2px);}
+.play:active{transform:translateY(1px);}
+
+/* CATEGORY PICKER */
+#catPick{background:radial-gradient(ellipse at 50% 0%,#2d0a52 0%,#0d0122 70%);justify-content:flex-start;padding-top:20px;}
+.cp-title{font-family:'Orbitron',sans-serif;font-size:1em;color:var(--accent);letter-spacing:.08em;margin-bottom:4px;}
+.cp-sub{color:var(--muted);font-size:.75em;margin-bottom:16px;}
+.cat-grid{width:100%;max-width:400px;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.cat-btn{padding:12px 10px;background:var(--card);border:2px solid var(--border);border-radius:12px;color:var(--white);font-family:'Nunito',sans-serif;font-weight:800;font-size:.82em;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;}
+.cat-btn:hover{transform:scale(1.03);}
+.cat-btn.sel{box-shadow:0 0 12px rgba(168,85,247,.4);}
+.cat-ico{font-size:18px;}
+.cat-all{width:100%;max-width:400px;padding:13px;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;border-radius:14px;color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:.9em;cursor:pointer;margin-bottom:8px;transition:all .18s;}
+.cat-all:hover{transform:translateY(-2px);}
+.cat-go{width:100%;max-width:400px;padding:13px;background:none;border:2px solid var(--accent);border-radius:14px;color:var(--accent);font-family:'Nunito',sans-serif;font-weight:900;font-size:.9em;cursor:pointer;transition:all .18s;}
+.cat-go:hover{background:rgba(168,85,247,.1);}
+.back-btn{align-self:flex-start;background:none;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.78em;cursor:pointer;margin-bottom:16px;transition:all .15s;}
+.back-btn:hover{border-color:var(--white);color:var(--white);}
+
+/* HUD */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;padding:8px 14px 5px;display:none;background:rgba(8,1,20,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+#hud.on{display:block;}
+.hud-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.hav{font-size:18px;width:30px;height:30px;border-radius:50%;background:var(--card);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;}
+.hmode{font-family:'Orbitron',sans-serif;font-size:.58em;color:var(--muted);letter-spacing:.07em;flex:1;text-transform:uppercase;}
+.hlives{font-size:14px;letter-spacing:1px;}
+.hscore{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--gold);font-weight:900;}
+.xpw{height:4px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;}
+.xpf{height:100%;background:linear-gradient(90deg,#7c3aed,#c084fc);border-radius:99px;transition:width .5s;width:0%;}
+
+/* GAME */
+#game{background:linear-gradient(180deg,#140228 0%,#0a011a 100%);padding-top:72px;justify-content:flex-start;}
+.qw{width:100%;max-width:500px;}
+.qhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.qlbl{font-size:.7em;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.qcat{font-size:.65em;color:var(--accent);letter-spacing:.06em;}
+#tdisp{font-family:'Orbitron',sans-serif;font-size:1em;color:var(--gold);display:none;}
+#tdisp.urg{color:var(--red);animation:urgp .4s infinite;}
+@keyframes urgp{0%,100%{opacity:1;}50%{opacity:.25;}}
+.qcard{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:16px 14px;margin-bottom:12px;}
+.qtxt{font-size:clamp(.9em,3.5vw,1.08em);font-weight:800;line-height:1.55;}
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.ob{width:100%;padding:12px 14px;background:var(--card);border:2px solid var(--border);border-radius:12px;color:var(--white);font-family:'Nunito',sans-serif;font-weight:700;font-size:.86em;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;}
+.ob:hover:not(:disabled){border-color:var(--accent);background:#250b3d;transform:scale(1.02);}
+.ob:active:not(:disabled){transform:scale(.97);}
+.ok{width:24px;height:24px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.7em;min-width:24px;font-family:'Orbitron',sans-serif;font-weight:700;transition:all .15s;}
+.ob.correct{border-color:var(--green);background:rgba(34,197,94,.1);}
+.ob.correct .ok{background:var(--green);color:#011a09;}
+.ob.wrong{border-color:var(--red);background:rgba(239,68,68,.1);}
+.ob.wrong .ok{background:var(--red);color:#fff;}
+.ob:disabled{cursor:default;}.ob.correct:disabled,.ob.wrong:disabled{opacity:1;}
+.tfg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.tfb{padding:22px 10px;background:var(--card);border:2px solid var(--border);border-radius:16px;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.92em;cursor:pointer;color:var(--muted);transition:all .15s;text-align:center;}
+.tfb:hover:not(:disabled){transform:scale(1.04);}
+.tfb.tv:hover:not(:disabled){border-color:var(--green);color:var(--green);background:rgba(34,197,94,.09);}
+.tfb.fv:hover:not(:disabled){border-color:var(--red);color:var(--red);background:rgba(239,68,68,.09);}
+.tfb.correct{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.12);}
+.tfb.wrong{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.12);}
+.tfb:disabled{cursor:default;}
+.fcwrap{perspective:700px;width:100%;margin-bottom:10px;cursor:pointer;}
+.fci{position:relative;width:100%;min-height:160px;transform-style:preserve-3d;transition:transform .5s;}
+.fci.flip{transform:rotateY(180deg);}
+.fcf{position:absolute;width:100%;min-height:160px;backface-visibility:hidden;border-radius:16px;background:var(--card);border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;text-align:center;gap:8px;}
+.fcb{transform:rotateY(180deg);border-color:var(--pink);background:rgba(244,114,182,.07);}
+.fctap{font-size:.64em;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.fcq{font-size:.95em;font-weight:800;line-height:1.5;}
+.fca{font-size:.88em;font-weight:700;color:var(--pink);line-height:1.6;white-space:pre-line;}
+.fcrate{display:none;gap:10px;margin-bottom:10px;}
+.fcrate.on{display:flex;}
+.fcrb{flex:1;padding:12px;border-radius:12px;border:2px solid;font-family:'Nunito',sans-serif;font-weight:800;font-size:.86em;cursor:pointer;background:none;transition:all .15s;}
+.fcrb.know{color:var(--green);border-color:var(--green);}
+.fcrb.know:hover{background:rgba(34,197,94,.13);}
+.fcrb.miss{color:var(--red);border-color:var(--red);}
+.fcrb.miss:hover{background:rgba(239,68,68,.13);}
+.fbbar{display:none;padding:10px 14px;border-radius:12px;margin-bottom:10px;font-size:.82em;font-weight:700;line-height:1.5;animation:fbu .25s ease;}
+@keyframes fbu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.fbbar.on{display:block;}
+.fbbar.ok{background:rgba(34,197,94,.12);border:1.5px solid var(--green);color:#86efac;}
+.fbbar.bad{background:rgba(239,68,68,.1);border:1.5px solid var(--red);color:#fca5a5;}
+.fbfact{color:rgba(255,255,255,.6);font-weight:600;margin-top:3px;font-size:.9em;}
+.nxt{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.88em;letter-spacing:.07em;cursor:pointer;box-shadow:0 5px 20px rgba(168,85,247,.4);transition:all .18s;display:none;}
+.nxt:hover{transform:translateY(-2px);}
+.nxt.on{display:block;animation:fbu .3s ease;}
+
+/* RESULTS */
+#results{background:radial-gradient(ellipse at 50% 0%,#3b0764 0%,#0d0122 70%);justify-content:center;}
+.rav{font-size:56px;margin-bottom:6px;animation:rbounce .6s ease;}
+@keyframes rbounce{0%{transform:scale(0);}60%{transform:scale(1.3);}100%{transform:scale(1);}}
+.rtitle{font-family:'Orbitron',sans-serif;font-size:clamp(20px,6vw,38px);font-weight:900;background:linear-gradient(135deg,var(--gold),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:4px;}
+.rsub{color:var(--muted);font-size:.7em;letter-spacing:.1em;margin-bottom:18px;}
+.rcards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:360px;margin-bottom:14px;}
+.rc{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 6px;text-align:center;}
+.rcn{font-family:'Orbitron',sans-serif;font-size:1.4em;font-weight:900;}
+.rcl{font-size:.6em;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-top:2px;}
+.xpe{background:rgba(168,85,247,.13);border:1.5px solid var(--accent);border-radius:10px;padding:9px 20px;margin-bottom:14px;font-size:.88em;color:var(--accent);}
+.rmsg{max-width:320px;text-align:center;color:var(--muted);font-size:.82em;line-height:1.6;margin-bottom:22px;}
+.rbtns{display:flex;gap:10px;width:100%;max-width:360px;}
+.rbtn{flex:1;padding:14px;border-radius:12px;border:2px solid;font-family:'Nunito',sans-serif;font-weight:800;font-size:.87em;cursor:pointer;background:none;transition:all .18s;}
+.rbhome{color:var(--muted);border-color:var(--border);}
+.rbhome:hover{color:var(--white);border-color:var(--white);}
+.rbretry{background:linear-gradient(135deg,#7c3aed,#a855f7);border-color:transparent;color:#fff;box-shadow:0 4px 16px rgba(168,85,247,.4);}
+.rbretry:hover{transform:translateY(-2px);}
+
+/* COMBO + LVL */
+#combo{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:900;font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(24px,7vw,44px);text-align:center;pointer-events:none;opacity:0;transition:transform .2s,opacity .3s;text-shadow:0 0 30px currentColor;}
+#combo.on{transform:translate(-50%,-50%) scale(1);opacity:1;}
+#lvlup{position:fixed;inset:0;z-index:800;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.82);pointer-events:none;opacity:0;transition:opacity .3s;}
+#lvlup.on{opacity:1;}
+.lvltxt{font-family:'Orbitron',sans-serif;font-size:clamp(26px,7vw,52px);font-weight:900;color:var(--gold);text-shadow:0 0 36px rgba(251,191,36,.8);animation:lbounce .5s ease;}
+@keyframes lbounce{0%{transform:scale(.4) rotate(-8deg);}60%{transform:scale(1.2) rotate(2deg);}100%{transform:scale(1) rotate(0);}}
+.lvlsub{color:var(--white);font-size:1em;margin-top:6px;}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+
+<!-- HOME -->
+<div class="screen" id="home">
+  <div class="logo">SCIMATH<br>QUEST</div>
+  <div class="sub">Science &amp; Math Adventure</div>
+  <div class="bank-badge">📚 200+ Questions · Works Offline · Never Repeats</div>
+  <div class="av-title">Choose your explorer</div>
+  <div class="av-row">
+    <button class="av on" data-a="🧑‍🚀" onclick="pickAv(this)">🧑‍🚀</button>
+    <button class="av" data-a="🧙" onclick="pickAv(this)">🧙</button>
+    <button class="av" data-a="🤖" onclick="pickAv(this)">🤖</button>
+    <button class="av" data-a="🦊" onclick="pickAv(this)">🦊</button>
+    <button class="av" data-a="🐉" onclick="pickAv(this)">🐉</button>
+  </div>
+  <div class="modes">
+    <button class="mb mc on" onclick="pickMode('mc',this)">
+      <span class="mi">🧠</span>
+      <div class="minfo"><div class="mname">Multiple Choice</div><div class="mdesc">10 questions · 4 options each</div></div>
+      <span class="mtag easy">EASY</span>
+    </button>
+    <button class="mb tf" onclick="pickMode('tf',this)">
+      <span class="mi">⚡</span>
+      <div class="minfo"><div class="mname">True or False</div><div class="mdesc">12 rapid-fire statements</div></div>
+      <span class="mtag easy">EASY</span>
+    </button>
+    <button class="mb blitz" onclick="pickMode('blitz',this)">
+      <span class="mi">🔥</span>
+      <div class="minfo"><div class="mname">Timed Blitz</div><div class="mdesc">10 secs per question · 3 lives</div></div>
+      <span class="mtag hard">HARD</span>
+    </button>
+    <button class="mb flash" onclick="pickMode('flash',this)">
+      <span class="mi">🃏</span>
+      <div class="minfo"><div class="mname">Flashcards</div><div class="mdesc">Tap to reveal · Study mode</div></div>
+      <span class="mtag med">MED</span>
+    </button>
+  </div>
+  <button class="play" onclick="openCatPick()">▶ CHOOSE TOPIC & PLAY</button>
+</div>
+
+<!-- CATEGORY PICK -->
+<div class="screen off" id="catPick">
+  <button class="back-btn" onclick="show('home')">← Back</button>
+  <div class="cp-title">PICK A TOPIC</div>
+  <div class="cp-sub">Or play all topics mixed together</div>
+  <div class="cat-grid" id="catGrid"></div>
+  <button class="cat-all" onclick="startGame(null)">🌍 ALL TOPICS MIXED</button>
+  <button class="cat-go" id="catGoBtn" onclick="startGame(selCat)" style="display:none">▶ Play Selected Topic</button>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-top">
+    <div class="hav" id="hav">🧑‍🚀</div>
+    <div class="hmode" id="hmode">MC · ALL TOPICS</div>
+    <div class="hlives" id="hlives">❤️❤️❤️</div>
+    <div class="hscore" id="hscore">0</div>
+  </div>
+  <div class="xpw"><div class="xpf" id="xpf"></div></div>
+</div>
+
+<!-- GAME -->
+<div class="screen off" id="game">
+  <div class="qw">
+    <div class="qhdr">
+      <div class="qlbl" id="qlbl">Q 1 / 10</div>
+      <div class="qcat" id="qcat"></div>
+      <div id="tdisp">⏱ 10</div>
+    </div>
+    <div class="qcard"><div class="qtxt" id="qtxt"></div></div>
+    <div id="ans"></div>
+    <div class="fcrate" id="fcrate">
+      <button class="fcrb know" onclick="fcScore(true)">✓ Got It</button>
+      <button class="fcrb miss" onclick="fcScore(false)">✗ Review</button>
+    </div>
+    <div class="fbbar" id="fbb"><span id="fbh"></span><div class="fbfact" id="fbf"></div></div>
+    <button class="nxt" id="nxt" onclick="nextQ()">NEXT →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen off" id="results">
+  <div class="rav" id="rav">🧑‍🚀</div>
+  <div class="rtitle" id="rtitle">MISSION COMPLETE!</div>
+  <div class="rsub">Challenge finished</div>
+  <div class="rcards">
+    <div class="rc"><div class="rcn" id="rsc" style="color:var(--gold)">0</div><div class="rcl">Score</div></div>
+    <div class="rc"><div class="rcn" id="rco" style="color:var(--green)">0</div><div class="rcl">Correct</div></div>
+    <div class="rc"><div class="rcn" id="rac" style="color:var(--blue)">0%</div><div class="rcl">Accuracy</div></div>
+  </div>
+  <div class="xpe" id="xpe">+0 XP earned</div>
+  <div class="rmsg" id="rmsg"></div>
+  <div class="rbtns">
+    <button class="rbtn rbhome" onclick="goHome()">🏠 Home</button>
+    <button class="rbtn rbretry" id="rretry">🔄 Play Again</button>
+  </div>
+</div>
+
+<div id="combo"></div>
+<div id="lvlup"><div class="lvltxt">⭐ LEVEL UP!</div><div class="lvlsub" id="lvlsub">Level 2!</div></div>
+
+<script>
+// ══════════════════════════════════════════════
+// 200+ QUESTION BANK
+// ══════════════════════════════════════════════
+const BANK = {
+  // ── PHYSICS ──────────────────────────────────
+  physics: {
+    icon:'⚛️', color:'#38bdf8',
+    mc:[
+      {q:"What is the unit of electric resistance?",o:["Volt","Watt","Ohm","Ampere"],c:2,f:"Resistance is measured in Ohms (Ω), named after Georg Ohm."},
+      {q:"Which law states that energy cannot be created or destroyed?",o:["Newton's First Law","Ohm's Law","Law of Conservation of Energy","Boyle's Law"],c:2,f:"The First Law of Thermodynamics — energy only changes form."},
+      {q:"What is the SI unit of force?",o:["Joule","Pascal","Newton","Watt"],c:2,f:"Force is measured in Newtons (N). 1 N = 1 kg·m/s²."},
+      {q:"Which type of wave does NOT need a medium to travel?",o:["Sound","Water","Electromagnetic","Seismic"],c:2,f:"Electromagnetic waves (light, radio, X-rays) travel through vacuum."},
+      {q:"What happens to resistance when temperature increases in a conductor?",o:["Decreases","Stays same","Increases","Becomes zero"],c:2,f:"Higher temperature = more atomic vibration = more resistance."},
+      {q:"What is the speed of sound in air at 20°C?",o:["200 m/s","343 m/s","1000 m/s","150 m/s"],c:1,f:"Sound travels at ~343 m/s in air at room temperature."},
+      {q:"What phenomenon explains why a straw looks bent in water?",o:["Reflection","Diffraction","Refraction","Dispersion"],c:2,f:"Refraction — light bends when it passes between media of different density."},
+      {q:"An object in free fall experiences what effective weight?",o:["Double its weight","Half its weight","Zero","Its normal weight"],c:2,f:"In free fall, both the object and scale fall together — apparent weight = 0."},
+      {q:"What is the formula for kinetic energy?",o:["mgh","½mv²","mv","Fd"],c:1,f:"KE = ½mv². Double the speed → four times the kinetic energy."},
+      {q:"Which color of light has the highest frequency?",o:["Red","Green","Yellow","Violet"],c:3,f:"Violet has the shortest wavelength and highest frequency in visible light."},
+      {q:"What does a transformer change in an electrical circuit?",o:["Current direction","Voltage","Resistance","Frequency"],c:1,f:"Transformers step voltage up or down using electromagnetic induction."},
+      {q:"Which particle carries the electric current in metals?",o:["Protons","Neutrons","Electrons","Photons"],c:2,f:"Free electrons in metals move to carry charge — they create current."},
+    ],
+    tf:[
+      {q:"Sound travels faster in water than in air.",a:true,f:"Sound travels ~1480 m/s in water vs ~343 m/s in air."},
+      {q:"A heavier object always falls faster than a lighter one.",a:false,f:"Galileo proved all objects fall at the same rate (ignoring air resistance)."},
+      {q:"Magnets always have both a north and south pole.",a:true,f:"Magnetic monopoles don't exist — cut a magnet and you get two magnets."},
+      {q:"Light travels faster in glass than in vacuum.",a:false,f:"Light slows down in denser media. It's fastest in vacuum."},
+      {q:"Every action has an equal and opposite reaction.",a:true,f:"Newton's Third Law of Motion."},
+      {q:"Electric current flows from negative to positive terminal externally.",a:false,f:"Conventional current flows positive to negative, though electrons move opposite."},
+    ],
+    fc:[
+      {q:"Newton's Second Law",a:"F = ma\n(Force = Mass × Acceleration)"},
+      {q:"Ohm's Law",a:"V = IR\n(Voltage = Current × Resistance)"},
+      {q:"What is the Doppler Effect?",a:"The change in frequency of a wave\nas its source moves toward or away from you"},
+      {q:"What is terminal velocity?",a:"The constant speed reached when\ndrag force equals gravitational force"},
+    ]
+  },
+
+  // ── CHEMISTRY ────────────────────────────────
+  chemistry: {
+    icon:'🧪', color:'#a855f7',
+    mc:[
+      {q:"What is the chemical symbol for Gold?",o:["Go","Gd","Au","Ag"],c:2,f:"Au from Latin 'Aurum'. Gold has atomic number 79."},
+      {q:"How many elements are in the periodic table?",o:["108","118","126","112"],c:1,f:"As of 2024, there are 118 confirmed elements in the periodic table."},
+      {q:"What is the pH of pure water?",o:["0","14","7","5"],c:2,f:"Pure water is neutral with pH 7. Below 7 = acidic, above 7 = basic."},
+      {q:"Which gas makes up most of Earth's atmosphere?",o:["Oxygen","Carbon dioxide","Argon","Nitrogen"],c:3,f:"Nitrogen (N₂) makes up ~78% of Earth's atmosphere."},
+      {q:"What type of bond involves sharing electrons?",o:["Ionic bond","Metallic bond","Covalent bond","Hydrogen bond"],c:2,f:"Covalent bonds share electron pairs between atoms."},
+      {q:"What is the chemical formula for table salt?",o:["NaCl","KCl","CaCO₃","MgSO₄"],c:0,f:"Sodium Chloride (NaCl) — one sodium ion and one chloride ion."},
+      {q:"Which element is a liquid at room temperature?",o:["Iron","Mercury","Copper","Zinc"],c:1,f:"Mercury (Hg) is the only metal that is liquid at room temperature (25°C)."},
+      {q:"What is the process of a solid turning directly into gas?",o:["Evaporation","Condensation","Sublimation","Deposition"],c:2,f:"Sublimation — dry ice (CO₂) sublimes at room temperature."},
+      {q:"What is an isotope?",o:["Same element, different electrons","Same element, different neutrons","Different elements, same mass","Same element, different protons"],c:1,f:"Isotopes have the same atomic number but different mass numbers."},
+      {q:"Which acid is found in the stomach?",o:["Sulfuric acid","Nitric acid","Hydrochloric acid","Acetic acid"],c:2,f:"Hydrochloric acid (HCl) in gastric juice helps digest food."},
+      {q:"What is the name of the process where plants make food?",o:["Respiration","Fermentation","Photosynthesis","Transpiration"],c:2,f:"6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂"},
+      {q:"Which subatomic particle determines the element?",o:["Neutron","Electron","Proton","Quark"],c:2,f:"The number of protons (atomic number) defines the element."},
+    ],
+    tf:[
+      {q:"Diamonds are made of carbon.",a:true,f:"Diamonds are pure carbon atoms arranged in a crystal lattice."},
+      {q:"All acids have a pH below 7.",a:true,f:"Acids have pH < 7. The lower the pH, the stronger the acid."},
+      {q:"Oxygen has the symbol 'O2' on the periodic table.",a:false,f:"Oxygen's symbol is just 'O'. O₂ is the molecular form we breathe."},
+      {q:"Rust is a form of oxidation.",a:true,f:"Iron + oxygen + water → iron oxide (rust). It's a slow oxidation reaction."},
+      {q:"Noble gases are highly reactive.",a:false,f:"Noble gases have full outer shells — they're almost completely inert."},
+      {q:"Baking soda is a base.",a:true,f:"Sodium bicarbonate (NaHCO₃) has a pH around 8.3 — mildly basic."},
+    ],
+    fc:[
+      {q:"What is Avogadro's Number?",a:"6.022 × 10²³\nparticles per mole of substance"},
+      {q:"What is an exothermic reaction?",a:"A reaction that RELEASES energy (heat)\ninto the surroundings. e.g. combustion"},
+      {q:"Difference: Atom vs Molecule",a:"Atom: smallest unit of an element\nMolecule: two or more atoms bonded together"},
+      {q:"What is the Periodic Table organized by?",a:"Increasing atomic number (protons)\nGrouped by similar chemical properties"},
+    ]
+  },
+
+  // ── BIOLOGY ──────────────────────────────────
+  biology: {
+    icon:'🧬', color:'#22c55e',
+    mc:[
+      {q:"What is the powerhouse of the cell?",o:["Nucleus","Ribosome","Mitochondria","Golgi body"],c:2,f:"Mitochondria produce ATP through cellular respiration."},
+      {q:"How many chromosomes does a human body cell have?",o:["23","44","46","48"],c:2,f:"46 chromosomes (23 pairs) in most human somatic cells."},
+      {q:"What does DNA stand for?",o:["Deoxyribonucleic Acid","Diribose Nucleic Acid","Double Nucleic Acid","Dinucleotide Amino Acid"],c:0,f:"DNA = Deoxyribonucleic Acid — the molecule of heredity."},
+      {q:"Which organ produces insulin?",o:["Liver","Kidney","Pancreas","Spleen"],c:2,f:"The pancreas produces insulin to regulate blood sugar levels."},
+      {q:"What is the basic unit of life?",o:["Atom","Organ","Tissue","Cell"],c:3,f:"The cell is the smallest structural and functional unit of life."},
+      {q:"How many chambers does the human heart have?",o:["2","3","4","5"],c:2,f:"4 chambers: left/right atria and left/right ventricles."},
+      {q:"What type of reproduction produces genetically identical offspring?",o:["Sexual","Asexual","Meiotic","Gametic"],c:1,f:"Asexual reproduction (e.g. binary fission, budding) makes clones."},
+      {q:"Which blood type is the universal donor?",o:["AB+","A-","O-","B+"],c:2,f:"O- has no antigens and no Rh factor — safe for almost any recipient."},
+      {q:"What is the largest organ in the human body?",o:["Liver","Brain","Lungs","Skin"],c:3,f:"Skin — it covers ~1.8 m² and weighs ~11 kg in adults."},
+      {q:"What process do cells use to make proteins?",o:["Transcription only","Translation only","Transcription then Translation","Replication"],c:2,f:"DNA → mRNA (transcription) → protein (translation)."},
+      {q:"Which vitamin is produced when skin is exposed to sunlight?",o:["Vitamin A","Vitamin B12","Vitamin C","Vitamin D"],c:3,f:"UV light triggers Vitamin D synthesis in skin from cholesterol."},
+      {q:"What is the function of red blood cells?",o:["Fight infection","Carry oxygen","Clot blood","Produce antibodies"],c:1,f:"Red blood cells carry oxygen via hemoglobin from lungs to tissues."},
+    ],
+    tf:[
+      {q:"Humans share about 98% of their DNA with chimpanzees.",a:true,f:"Chimpanzees are our closest living relatives at ~98.7% DNA similarity."},
+      {q:"The human brain is fully developed at birth.",a:false,f:"The brain continues developing until the mid-20s, especially the prefrontal cortex."},
+      {q:"Viruses are alive.",a:false,f:"Viruses lack cells and metabolism — they're considered on the edge of life."},
+      {q:"All mammals are warm-blooded.",a:true,f:"Mammals regulate their own body temperature (endotherms)."},
+      {q:"Mitosis produces 4 daughter cells.",a:false,f:"Mitosis produces 2 identical cells. Meiosis produces 4 genetically unique cells."},
+      {q:"The liver can regenerate itself.",a:true,f:"The liver is the only organ that can fully regenerate from 25% of its tissue."},
+    ],
+    fc:[
+      {q:"Mitosis vs Meiosis",a:"Mitosis → 2 identical daughter cells (growth/repair)\nMeiosis → 4 unique sex cells (reproduction)"},
+      {q:"What is natural selection?",a:"Process where organisms with favorable traits\nsurvive and reproduce more successfully"},
+      {q:"What is an enzyme?",a:"A biological catalyst (protein)\nthat speeds up chemical reactions in the body"},
+      {q:"What is osmosis?",a:"Movement of water across a\nsemipermeable membrane from low to high solute concentration"},
+    ]
+  },
+
+  // ── MATHEMATICS ──────────────────────────────
+  mathematics: {
+    icon:'🧮', color:'#fbbf24',
+    mc:[
+      {q:"What is 15% of 200?",o:["25","30","35","20"],c:1,f:"15% of 200 = 0.15 × 200 = 30."},
+      {q:"What is the derivative of sin(x)?",o:["−cos(x)","-sin(x)","cos(x)","tan(x)"],c:2,f:"d/dx[sin(x)] = cos(x). And d/dx[cos(x)] = −sin(x)."},
+      {q:"What is the sum of interior angles of a hexagon?",o:["540°","720°","900°","600°"],c:1,f:"(n−2)×180° = (6−2)×180° = 720°."},
+      {q:"If f(x) = x², what is f'(x)?",o:["x","2x²","2x","x/2"],c:2,f:"Power rule: d/dx(xⁿ) = nxⁿ⁻¹ → d/dx(x²) = 2x."},
+      {q:"What is the value of 0! (zero factorial)?",o:["0","Undefined","∞","1"],c:3,f:"By definition, 0! = 1. This is necessary for many combinatorics formulas."},
+      {q:"What is the next prime number after 13?",o:["14","15","16","17"],c:3,f:"17 is prime. 14=2×7, 15=3×5, 16=2⁴ are all composite."},
+      {q:"Solve: 2x + 5 = 13. What is x?",o:["3","4","5","6"],c:1,f:"2x = 13 − 5 = 8 → x = 4."},
+      {q:"What is the area of a triangle with base 8 and height 5?",o:["40","25","20","13"],c:2,f:"Area = ½ × base × height = ½ × 8 × 5 = 20."},
+      {q:"Which number is irrational?",o:["√4","0.333...","√2","¾"],c:2,f:"√2 ≈ 1.41421... — it never repeats or terminates."},
+      {q:"What is log₁₀(1000)?",o:["2","10","3","100"],c:2,f:"10³ = 1000, so log₁₀(1000) = 3."},
+      {q:"The Fibonacci sequence starts 0,1,1,2,3,5,8... What comes next?",o:["11","12","13","14"],c:2,f:"Each term = sum of previous two: 5+8 = 13."},
+      {q:"What is the circumference of a circle with radius 7? (use π≈3.14)",o:["21.98","43.96","153.86","44"],c:1,f:"C = 2πr = 2 × 3.14 × 7 = 43.96."},
+    ],
+    tf:[
+      {q:"A negative times a negative equals a positive.",a:true,f:"(−3) × (−4) = +12. The rule holds for all real numbers."},
+      {q:"π is equal to exactly 22/7.",a:false,f:"22/7 ≈ 3.142857... is only an approximation. π ≈ 3.14159265..."},
+      {q:"Every even number greater than 2 is the sum of two primes.",a:true,f:"This is Goldbach's Conjecture — unproven but verified for enormous numbers."},
+      {q:"The square root of a negative number is a real number.",a:false,f:"√(−1) = i, an imaginary number. Not a real number."},
+      {q:"0 is both positive and negative.",a:false,f:"Zero is neither positive nor negative."},
+      {q:"A triangle can have two right angles.",a:false,f:"Two right angles = 180° — no room for the third angle. Impossible."},
+    ],
+    fc:[
+      {q:"Pythagorean Theorem",a:"a² + b² = c²\n(c = hypotenuse of a right triangle)"},
+      {q:"Quadratic Formula",a:"x = (−b ± √(b²−4ac)) / 2a\nSolves ax² + bx + c = 0"},
+      {q:"What is a logarithm?",a:"logₐ(b) = x  means  aˣ = b\n'To what power must a be raised to get b?'"},
+      {q:"Difference: Permutation vs Combination",a:"Permutation: ORDER matters → nPr = n!/(n−r)!\nCombination: order doesn't → nCr = n!/(r!(n−r)!)"},
+    ]
+  },
+
+  // ── ASTRONOMY ────────────────────────────────
+  astronomy: {
+    icon:'🌌', color:'#f472b6',
+    mc:[
+      {q:"How long does light from the Sun take to reach Earth?",o:["8 seconds","8 minutes","8 hours","8 days"],c:1,f:"~150 million km ÷ 300,000 km/s = ~8 minutes 20 seconds."},
+      {q:"What is a light year?",o:["Time for light to orbit Earth","Distance light travels in one year","Speed of light","Age of the universe"],c:1,f:"1 light year ≈ 9.46 × 10¹² km — a unit of distance, not time."},
+      {q:"Which planet has the Great Red Spot?",o:["Mars","Saturn","Neptune","Jupiter"],c:3,f:"Jupiter's Great Red Spot is a storm wider than Earth, ongoing for 350+ years."},
+      {q:"What type of galaxy is the Milky Way?",o:["Elliptical","Irregular","Spiral","Ring"],c:2,f:"The Milky Way is a barred spiral galaxy, ~100,000 light years across."},
+      {q:"What causes seasons on Earth?",o:["Distance from Sun","Earth's axial tilt","Moon's gravity","Solar flares"],c:1,f:"Earth's 23.5° axial tilt determines how directly sunlight hits each hemisphere."},
+      {q:"What is the closest star to Earth after the Sun?",o:["Sirius","Betelgeuse","Proxima Centauri","Vega"],c:2,f:"Proxima Centauri is ~4.24 light years away, in the Alpha Centauri system."},
+      {q:"What is a black hole's boundary called?",o:["Singularity","Photon sphere","Event horizon","Accretion disk"],c:2,f:"The event horizon is the point of no return — not even light can escape."},
+      {q:"How many planets are in our solar system?",o:["7","8","9","10"],c:1,f:"8 planets since Pluto was reclassified as a dwarf planet in 2006."},
+      {q:"What makes up most of the universe by mass-energy?",o:["Stars","Dark matter & dark energy","Gas clouds","Black holes"],c:1,f:"Dark energy (~68%) + dark matter (~27%) = ~95% of the universe."},
+      {q:"Which planet rotates on its side?",o:["Saturn","Venus","Uranus","Neptune"],c:2,f:"Uranus has an axial tilt of ~98° — it essentially rolls around the Sun."},
+    ],
+    tf:[
+      {q:"The Sun is a star.",a:true,f:"The Sun is a G-type main-sequence star (yellow dwarf), ~4.6 billion years old."},
+      {q:"The Moon produces its own light.",a:false,f:"The Moon reflects sunlight. It has no internal light source."},
+      {q:"A day on Venus is longer than a year on Venus.",a:true,f:"Venus rotates so slowly (243 Earth days) that a day exceeds its 225-day year."},
+      {q:"All stars are the same color.",a:false,f:"Star color depends on temperature: blue = hottest, red = coolest."},
+      {q:"Astronauts are weightless because there is no gravity in space.",a:false,f:"They're in free fall — gravity still acts but they fall at the same rate as their spacecraft."},
+    ],
+    fc:[
+      {q:"What is the Big Bang Theory?",a:"The universe began ~13.8 billion years ago\nfrom an extremely hot, dense singularity"},
+      {q:"What is a neutron star?",a:"The collapsed core of a massive star\nExtremely dense: teaspoon = ~1 billion tons"},
+      {q:"What is the Hubble constant?",a:"The rate at which the universe is expanding\n~70 km/s per megaparsec"},
+    ]
+  },
+
+  // ── EARTH SCIENCE ────────────────────────────
+  earth: {
+    icon:'🌍', color:'#34d399',
+    mc:[
+      {q:"What is the thickest layer of the Earth?",o:["Crust","Outer core","Inner core","Mantle"],c:3,f:"The mantle is ~2,900 km thick, making up ~84% of Earth's volume."},
+      {q:"What scale measures earthquake magnitude?",o:["Fahrenheit","Beaufort","Richter","Mohs"],c:2,f:"The Richter scale (now Moment Magnitude Scale) measures earthquake energy."},
+      {q:"What process forms igneous rocks?",o:["Pressure on sediments","Cooling of magma","Metamorphism","Erosion"],c:1,f:"Igneous rocks form when magma (underground) or lava (surface) cools."},
+      {q:"What percentage of Earth's water is freshwater?",o:["71%","50%","3%","10%"],c:2,f:"Only ~3% is freshwater, and most of that is locked in glaciers and ice caps."},
+      {q:"What drives tectonic plate movement?",o:["Moon's gravity","Solar wind","Convection currents in the mantle","Earth's rotation"],c:2,f:"Heat-driven convection in the mantle drags tectonic plates along."},
+      {q:"Which gas is most responsible for the greenhouse effect?",o:["Oxygen","Argon","Carbon dioxide","Hydrogen"],c:2,f:"CO₂ and water vapor trap the most heat in Earth's atmosphere."},
+    ],
+    tf:[
+      {q:"The Earth's core is mostly made of iron and nickel.",a:true,f:"Earth's core is ~80% iron and ~5% nickel, with some lighter elements."},
+      {q:"Earthquakes can only happen at tectonic plate boundaries.",a:false,f:"Intraplate earthquakes occur far from boundaries due to ancient faults."},
+      {q:"The ozone layer is in the stratosphere.",a:true,f:"The ozone layer sits 15–35 km up in the stratosphere, blocking UV rays."},
+    ],
+    fc:[
+      {q:"What is the rock cycle?",a:"Rocks continuously transform between\nigneous, sedimentary, and metamorphic types\nthrough heat, pressure, erosion, and melting"},
+      {q:"What causes the Northern Lights (Aurora)?",a:"Charged particles from the Sun\ninteract with Earth's magnetic field\nand excite atmospheric gases"},
+    ]
+  },
+
+  // ── HUMAN BODY ───────────────────────────────
+  body: {
+    icon:'🫀', color:'#ef4444',
+    mc:[
+      {q:"How many bones are in the adult human body?",o:["212","206","198","220"],c:1,f:"Adults have 206 bones. Babies start with ~270; many fuse during growth."},
+      {q:"What is the largest bone in the human body?",o:["Spine","Skull","Humerus","Femur"],c:3,f:"The femur (thigh bone) is the longest and strongest bone."},
+      {q:"How many teeth does an adult human have?",o:["28","30","32","34"],c:2,f:"32 adult teeth, including 4 wisdom teeth (which some people never develop)."},
+      {q:"What is the normal human body temperature?",o:["35°C","36.5°C","37°C","38°C"],c:2,f:"37°C (98.6°F) is the average, though 36–37.5°C is normal range."},
+      {q:"Which part of the brain controls balance?",o:["Cerebrum","Cerebellum","Brain stem","Hypothalamus"],c:1,f:"The cerebellum coordinates balance, posture, and fine motor movements."},
+      {q:"How many times does the heart beat per minute on average?",o:["50","60–100","120","40"],c:1,f:"A resting heart rate of 60–100 bpm is considered normal for adults."},
+    ],
+    tf:[
+      {q:"The left side of the brain controls the right side of the body.",a:true,f:"The brain is contralaterally organized — left hemisphere controls right body side."},
+      {q:"Humans use only 10% of their brain.",a:false,f:"This is a myth. Brain imaging shows virtually all areas are active at some point."},
+      {q:"Your fingernails grow faster than your toenails.",a:true,f:"Fingernails grow ~3.5mm/month vs ~1.6mm/month for toenails."},
+    ],
+    fc:[
+      {q:"What is the function of the hypothalamus?",a:"Regulates body temperature, hunger, thirst,\nsleep, and hormone release via pituitary gland"},
+      {q:"What is the difference between arteries and veins?",a:"Arteries: carry oxygenated blood FROM heart\nVeins: carry deoxygenated blood TO heart\n(except pulmonary vessels — reversed)"},
+    ]
+  },
+
+  // ── ALGEBRA ──────────────────────────────────
+  algebra: {
+    icon:'📐', color:'#fb923c',
+    mc:[
+      {q:"Solve: 3x − 7 = 14. What is x?",o:["5","6","7","8"],c:2,f:"3x = 14+7 = 21, x = 7."},
+      {q:"What is the slope of the line y = 3x + 5?",o:["5","3","8","−3"],c:1,f:"In y = mx + b form, m is the slope. Here m = 3."},
+      {q:"Expand: (x + 3)²",o:["x² + 9","x² + 3x + 9","x² + 6x + 9","x² + 6x + 3"],c:2,f:"(a+b)² = a² + 2ab + b² = x² + 6x + 9."},
+      {q:"Simplify: 2(3x + 4) − 5x",o:["x + 8","11x + 8","x − 8","11x − 8"],c:0,f:"6x + 8 − 5x = x + 8."},
+      {q:"If 2x + y = 10 and x = 3, what is y?",o:["3","4","7","16"],c:1,f:"2(3) + y = 10 → 6 + y = 10 → y = 4."},
+      {q:"Which is a quadratic equation?",o:["3x + 2 = 0","x² + 5x − 6 = 0","x³ = 8","2/x = 4"],c:1,f:"A quadratic has degree 2 (highest power is x²)."},
+      {q:"What are the roots of x² − 5x + 6 = 0?",o:["2 and 3","1 and 6","−2 and −3","−1 and −6"],c:0,f:"Factor: (x−2)(x−3) = 0 → x = 2 or x = 3."},
+      {q:"What is the y-intercept of y = 4x − 7?",o:["4","7","−7","−4"],c:2,f:"y-intercept is where x=0: y = 4(0) − 7 = −7."},
+    ],
+    tf:[
+      {q:"x² = 9 has two solutions.",a:true,f:"x = +3 and x = −3. Both satisfy the equation."},
+      {q:"The graph of y = x² is a straight line.",a:false,f:"y = x² is a parabola (U-shaped curve), not a line."},
+      {q:"A function can have multiple y-values for one x-value.",a:false,f:"By definition, a function maps each input to exactly one output."},
+      {q:"(−x)² always equals x².",a:true,f:"(−x)² = (−x)(−x) = x². Squaring removes the negative."},
+    ],
+    fc:[
+      {q:"What is the discriminant?",a:"b² − 4ac in the quadratic formula\n>0: two real roots | =0: one root | <0: no real roots"},
+      {q:"Laws of exponents: xᵃ × xᵇ",a:"xᵃ × xᵇ = xᵃ⁺ᵇ\nxᵃ ÷ xᵇ = xᵃ⁻ᵇ\n(xᵃ)ᵇ = xᵃᵇ"},
+    ]
+  },
+};
+
+// ══════════════════════════════════════════════
+// SEEN TRACKER (avoids repeats)
+const seen = {};
+Object.keys(BANK).forEach(k=>{seen[k]={mc:[],tf:[],fc:[]};});
+
+function getUnseen(cat,type,count){
+  const pool=BANK[cat][type]||[];
+  let unseen=pool.filter((_,i)=>!seen[cat][type].includes(i));
+  if(unseen.length < count){
+    // Reset seen for this category/type
+    seen[cat][type]=[];
+    unseen=pool;
+  }
+  const chosen=shuf([...unseen]).slice(0,count);
+  chosen.forEach(q=>{
+    const idx=pool.indexOf(q);
+    if(idx>=0) seen[cat][type].push(idx);
+  });
+  return chosen;
+}
+
+function buildQuestions(catKey, modeStr){
+  const type = (modeStr==='tf') ? 'tf' : (modeStr==='flash') ? 'fc' : 'mc';
+  const count = (modeStr==='tf') ? 12 : 10;
+
+  if(catKey === null){
+    // ALL TOPICS mixed — grab 1-2 from each category
+    const cats = Object.keys(BANK);
+    let pool = [];
+    cats.forEach(cat=>{
+      const arr = BANK[cat][type]||[];
+      if(arr.length) pool.push(...getUnseen(cat,type,Math.ceil(count/cats.length)+1));
+    });
+    return shuf(pool).slice(0,count);
+  } else {
+    return getUnseen(catKey, type, count);
+  }
+}
+
+// ══════════════════════════════════════════════
+// STATE
+let av='🧑‍🚀', mode='mc', qs=[], cur=0, score=0, lives=3;
+let combo=0, xp=0, level=1, xpNext=100, results=[], done=false, tid=null, tLeft=10;
+let selCat=null, currentCatKey=null;
+
+// ── STARS ──
+(()=>{
+  const s=document.getElementById('stars');
+  for(let i=0;i<70;i++){
+    const d=document.createElement('div');d.className='star';
+    const sz=Math.random()*2.5+.8;
+    d.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:${Math.random()*4}s`;
+    s.appendChild(d);
+  }
+})();
+
+// ── AUDIO ──
+let actx;
+function ac(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();return actx;}
+function tone(f,tp,dur,vol=.28){try{const c=ac(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type=tp;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dur);o.start();o.stop(c.currentTime+dur);}catch(e){}}
+function sfxOk(){tone(523,'sine',.1);setTimeout(()=>tone(659,'sine',.1),90);setTimeout(()=>tone(784,'sine',.18),180);}
+function sfxBad(){tone(200,'sawtooth',.28,.22);}
+function sfxCombo(){tone(880,'sine',.07);setTimeout(()=>tone(1047,'sine',.07),75);setTimeout(()=>tone(1319,'sine',.14),150);}
+function sfxLvl(){[523,587,659,784,880,1047].forEach((f,i)=>setTimeout(()=>tone(f,'sine',.14),i*65));}
+function sfxClick(){tone(380,'sine',.04,.12);}
+
+// ── HOME ──
+function pickAv(btn){
+  sfxClick();
+  document.querySelectorAll('.av').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');av=btn.dataset.a;
+}
+function pickMode(m,btn){
+  sfxClick();mode=m;
+  document.querySelectorAll('.mb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// ── CATEGORY PICKER ──
+function openCatPick(){
+  sfxClick();selCat=null;
+  // Build category buttons
+  const grid=document.getElementById('catGrid');
+  grid.innerHTML='';
+  Object.keys(BANK).forEach(key=>{
+    const cat=BANK[key];
+    const btn=document.createElement('button');
+    btn.className='cat-btn';
+    btn.innerHTML=`<span class="cat-ico">${cat.icon}</span><span>${key.charAt(0).toUpperCase()+key.slice(1)}</span>`;
+    btn.style.borderColor=cat.color;
+    btn.onclick=()=>{
+      sfxClick();selCat=key;
+      document.querySelectorAll('.cat-btn').forEach(b=>{b.classList.remove('sel');b.style.background='';});
+      btn.classList.add('sel');
+      btn.style.background=cat.color+'22';
+      document.getElementById('catGoBtn').style.display='block';
+    };
+    grid.appendChild(btn);
+  });
+  document.getElementById('catGoBtn').style.display='none';
+  show('catPick');
+}
+
+// ── START GAME ──
+function startGame(catKey){
+  sfxClick();
+  currentCatKey=catKey;
+  qs=buildQuestions(catKey, mode);
+  if(!qs.length){alert('No questions available for this combination!');return;}
+  lives=3;score=0;combo=0;cur=0;results=[];done=false;
+  clearInterval(tid);
+  document.getElementById('hav').textContent=av;
+  const catName = catKey ? BANK[catKey].icon+' '+catKey.toUpperCase() : '🌍 ALL TOPICS';
+  document.getElementById('hmode').textContent={mc:'MC',tf:'T/F',blitz:'BLITZ',flash:'CARDS'}[mode]+' · '+catName;
+  document.getElementById('hud').classList.add('on');
+  show('game');showQ();
+}
+
+// ── QUESTION ──
+function showQ(){
+  const q=qs[cur];done=false;
+  document.getElementById('qlbl').textContent=`Q ${cur+1} / ${qs.length}`;
+  document.getElementById('qtxt').textContent=q.q;
+  document.getElementById('fbb').className='fbbar';
+  document.getElementById('nxt').className='nxt';
+  document.getElementById('tdisp').style.display='none';
+  document.getElementById('fcrate').className='fcrate';
+  clearInterval(tid);updateHUD();
+  const area=document.getElementById('ans');
+  if(mode==='mc') renderMC(q,area);
+  else if(mode==='tf') renderTF(q,area);
+  else if(mode==='blitz'){renderMC(q,area);startTimer();}
+  else{area.innerHTML='';renderFC(q);}
+}
+
+function renderMC(q,a){
+  // Shuffle options while keeping track of correct
+  const idxArr=[0,1,2,3];
+  const shuffledIdx=shuf([...idxArr]);
+  const newOpts=shuffledIdx.map(i=>q.o[i]);
+  const newCorrect=shuffledIdx.indexOf(q.c);
+  a.innerHTML='<div class="opts">'+newOpts.map((o,i)=>
+    `<button class="ob" onclick="ansMC(${i},${newCorrect})" id="o${i}"><span class="ok">${'ABCD'[i]}</span><span>${o}</span></button>`
+  ).join('')+'</div>';
+}
+function ansMC(i,correctIdx){
+  if(done)return;done=true;clearInterval(tid);
+  const q=qs[cur],ok=i===correctIdx;
+  finish(ok,q.f||'',()=>{
+    document.querySelectorAll('.ob').forEach((b,j)=>{
+      b.disabled=true;
+      if(j===correctIdx)b.classList.add('correct');
+      else if(j===i)b.classList.add('wrong');
+    });
+  });
+}
+
+function renderTF(q,a){
+  a.innerHTML=`<div class="tfg">
+    <button class="tfb tv" onclick="ansTF(true)">✅ TRUE</button>
+    <button class="tfb fv" onclick="ansTF(false)">❌ FALSE</button>
+  </div>`;
+}
+function ansTF(v){
+  if(done)return;done=true;
+  const q=qs[cur],ok=v===q.a;
+  finish(ok,q.f||'',()=>{
+    document.querySelectorAll('.tfb').forEach(b=>{
+      b.disabled=true;
+      const bv=b.classList.contains('tv');
+      if(bv===q.a)b.classList.add('correct');
+      else if(bv===v)b.classList.add('wrong');
+    });
+  });
+}
+
+function startTimer(){
+  tLeft=10;
+  const t=document.getElementById('tdisp');
+  t.style.display='block';t.className='';t.textContent='⏱ '+tLeft;
+  clearInterval(tid);
+  tid=setInterval(()=>{
+    tLeft--;t.textContent='⏱ '+tLeft;
+    if(tLeft<=3)t.className='urg';
+    if(tLeft<=0){
+      clearInterval(tid);
+      if(!done){
+        done=true;
+        // find correct index from current rendered buttons
+        const btns=document.querySelectorAll('.ob');
+        // just mark all and show fact
+        btns.forEach(b=>b.disabled=true);
+        finish(false,"Time's up! "+qs[cur].f,()=>{});
+      }
+    }
+  },1000);
+}
+
+function renderFC(q){
+  document.getElementById('ans').innerHTML=`
+    <div class="fcwrap" onclick="flipFC()">
+      <div class="fci" id="fci">
+        <div class="fcf"><div class="fctap">TAP TO REVEAL</div><div class="fcq">${q.q}</div></div>
+        <div class="fcf fcb"><div class="fctap">ANSWER</div><div class="fca">${(q.a||'').replace(/\\n/g,'\n')}</div></div>
+      </div>
+    </div>`;
+}
+function flipFC(){
+  const el=document.getElementById('fci');
+  if(!el)return;
+  el.classList.toggle('flip');
+  if(el.classList.contains('flip')){sfxClick();document.getElementById('fcrate').className='fcrate on';}
+}
+function fcScore(knew){
+  if(knew){score+=10;combo++;gainXP(15);sfxOk();}else{combo=0;sfxBad();}
+  results.push(knew);cur++;updateHUD();
+  if(cur<qs.length)showQ();else showResults();
+}
+
+function finish(ok,fact,markUI){
+  if(ok){sfxOk();combo++;score+=10+(combo>1?combo*2:0);gainXP(20);}
+  else{sfxBad();combo=0;lives--;if(lives<0)lives=0;}
+  results.push(ok);markUI();
+  const fb=document.getElementById('fbb');
+  fb.className='fbbar '+(ok?'ok':'bad')+' on';
+  document.getElementById('fbh').textContent=ok?`✓ Correct!${combo>1?' 🔥 Combo x'+combo:''}`:'✗ Wrong!';
+  document.getElementById('fbf').textContent=fact;
+  document.getElementById('nxt').className='nxt on';
+  if(combo>=3)showCombo();
+  updateHUD();
+  if(lives<=0)setTimeout(()=>showResults(),1300);
+}
+function nextQ(){
+  sfxClick();clearInterval(tid);cur++;
+  if(cur<qs.length&&lives>0)showQ();else showResults();
+}
+
+function gainXP(n){
+  xp+=n;
+  if(xp>=xpNext){xp-=xpNext;level++;xpNext=Math.floor(xpNext*1.4);triggerLvl();}
+  document.getElementById('xpf').style.width=(xp/xpNext*100)+'%';
+}
+function triggerLvl(){
+  sfxLvl();
+  document.getElementById('lvlsub').textContent='You reached Level '+level+' 🎉';
+  const el=document.getElementById('lvlup');el.classList.add('on');
+  setTimeout(()=>el.classList.remove('on'),2200);
+}
+function showCombo(){
+  sfxCombo();
+  const msgs=['🔥 COMBO!','💥 HOT!','⚡ ON FIRE!','🌟 LEGEND!'];
+  const cols=['#fbbf24','#fb923c','#f87171','#facc15'];
+  const i=Math.min(combo-3,3);
+  const el=document.getElementById('combo');
+  el.textContent=msgs[Math.max(0,i)];el.style.color=cols[Math.max(0,i)];
+  el.classList.add('on');setTimeout(()=>el.classList.remove('on'),950);
+}
+function updateHUD(){
+  document.getElementById('hscore').textContent=score;
+  let h='';for(let i=0;i<3;i++)h+=(i<lives?'❤️':'🖤');
+  document.getElementById('hlives').textContent=h;
+}
+
+function showResults(){
+  clearInterval(tid);document.getElementById('hud').classList.remove('on');
+  const corr=results.filter(Boolean).length,tot=results.length;
+  const acc=tot>0?Math.round(corr/tot*100):0;
+  document.getElementById('rav').textContent=av;
+  document.getElementById('rsc').textContent=score;
+  document.getElementById('rco').textContent=corr+'/'+tot;
+  document.getElementById('rac').textContent=acc+'%';
+  document.getElementById('xpe').textContent='+'+score+' XP earned';
+  const titles=[[90,'LEGENDARY! 🌟'],[70,'EXCELLENT! 🎯'],[50,'GREAT JOB! 👏'],[30,'KEEP GOING! 💪'],[0,'TRY AGAIN! 🔄']];
+  const msgs=[[90,'Outstanding! You are a true science and math master.'],[70,'Excellent knowledge! Just a few gaps to fill.'],[50,'Solid work — practice makes perfect!'],[30,'Good attempt! Review and come back stronger.'],[0,'Every expert started as a beginner. Keep going!']];
+  document.getElementById('rtitle').textContent=(titles.find(([t])=>acc>=t)||titles[4])[1];
+  document.getElementById('rmsg').textContent=(msgs.find(([t])=>acc>=t)||msgs[4])[1];
+  document.getElementById('rretry').onclick=()=>startGame(currentCatKey);
+  show('results');
+}
+
+function show(id){
+  ['home','catPick','game','results'].forEach(s=>{
+    document.getElementById(s).classList.toggle('off',s!==id);
+  });
+  window.scrollTo(0,0);
+}
+function goHome(){
+  sfxClick();clearInterval(tid);
+  document.getElementById('hud').classList.remove('on');
+  show('home');
+}
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+</script>
+</body>
+</html>
